@@ -1,0 +1,23 @@
+{
+  "name": "fuel-booth-game",
+  "description": "HexGL feat. Fuel",
+  "author": "Kalmia",
+  "license": "MIT",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "run-p serve live-reload",
+    "dev:coffee": "run-p compile:watch serve",
+    "serve": "http-server ./ -p 8080",
+    "live-reload": "browser-sync start --proxy \"127.0.0.1:8080\" --files \".\"",
+    "compile": "coffee -c .",
+    "compile:watch": "coffee --watch -c ."
+  },
+  "dependencies": {
+    "browser-sync": "^3.0.2",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "coffeescript": "^2.7.0",
+    "npm-run-all": "^4.1.5"
+  }
+}
