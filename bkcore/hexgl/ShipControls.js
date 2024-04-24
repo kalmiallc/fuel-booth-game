@@ -583,6 +583,12 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
   );
   var pos = new THREE.Vector3(x, 0, z);
 
+  // console.log([
+  //   this.dummy.position.x,
+  //   this.dummy.position.y,
+  //   this.dummy.position.z,
+  // ]);
+
   var color = this.collisionMap.getPixel(x, z);
 
   if (color.r == 255 && color.g < 127 && color.b < 127) {

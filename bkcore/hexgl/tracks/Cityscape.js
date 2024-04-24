@@ -80,6 +80,7 @@ bkcore.hexgl.tracks.Cityscape = {
             "geometries/tracks/cityscape/startbanner.js",
           "track.cityscape.bonus.speed":
             "geometries/tracks/cityscape/bonus/speed.js",
+          "fuel.coin": "fuel/coin.js",
         },
         analysers: {
           "track.cityscape.collision":
@@ -182,6 +183,7 @@ bkcore.hexgl.tracks.Cityscape = {
             "geometries/tracks/cityscape/startbanner.js",
           "track.cityscape.bonus.speed":
             "geometries/tracks/cityscape/bonus/speed.js",
+          "fuel.coin": "fuel/coin.js",
         },
         analysers: {
           "track.cityscape.collision":
@@ -576,6 +578,40 @@ bkcore.hexgl.tracks.Cityscape = {
       this.materials.startBanner
     );
     startbanner.doubleSided = true;
+
+    // #region Fuel Coins
+
+    // var coin = ctx.createMesh(
+    //   scene,
+    //   this.lib.get("geometries", "fuel.coin"),
+    //   0,
+    //   -10,
+    //   0,
+    //   this.materials.bonusBase
+    // );
+    // coin.doubleSided = true;
+
+    var coinGeometry = this.lib.get("geometries", "fuel.coin");
+
+    console.log(coinGeometry);
+
+    // coinGeometry.computeTangents();
+
+    console.log("computed T");
+
+    var coinMesh = new THREE.Mesh(coinGeometry);
+    console.log(coinMesh);
+    coinMesh.position.set(-2267, 390, -808); // ShipControls#boosterCheck()
+    coinMesh.rotation.set(0, Math.PI / 2, 0);
+    scene.add(coinMesh);
+    // coinMesh.position.set(0, 0.665, 3.8);
+    // ship.add(coinMesh);
+    coinMesh.castShadow = true;
+    coinMesh.receiveShadow = true;
+    coinMesh.doubleSided = true;
+
+    console.log(coinMesh);
+    // #endregion
 
     // CAMERA
     ctx.components.cameraChase = new bkcore.hexgl.CameraChase({
