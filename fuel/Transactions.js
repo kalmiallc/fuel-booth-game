@@ -135,6 +135,16 @@ class FuelTransactions {
     }
   }
 
+  async trigger_event() {
+    try {
+      //await fetch('http://fuelcounter.primozhrastar.si/');
+      let res = await fetch('http://fuelcounter.primozhrastar.si/');
+      console.log("trigger_event");
+      console.log(res);
+  } catch (error) {
+    console.log('Failed to fetch trigger_event:', error);
+  }
+    }
 async read_last_events() {
     try {
       let response = await fetch('https://beta-5.fuel.network/graphql', {
@@ -162,6 +172,7 @@ async read_last_events() {
     if (!this.timeouts.boost) {
       this.read_address_events();
       this.read_last_events();
+      this.trigger_event();
       this.timeouts.boost = true;
       setTimeout(() => {
         this.timeouts.boost = false;
