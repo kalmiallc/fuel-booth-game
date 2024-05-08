@@ -1,5 +1,5 @@
 import axios from 'axios';
-axios.get('https://primozhrastar.si')
+axios.get('https://www.bbc.com/')
     .then(response => {
     console.log(response.data);
 })

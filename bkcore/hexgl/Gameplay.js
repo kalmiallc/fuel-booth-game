@@ -11,8 +11,8 @@ bkcore.hexgl = bkcore.hexgl || {};
 bkcore.hexgl.Gameplay = function (opts) {
   var self = this;
 
-  this.startDelay = opts.hud == null ? 0 : 1000;
-  this.countDownDelay = opts.hud == null ? 1000 : 1500;
+  this.startDelay = opts.hud == null ? 0 : 100;
+  this.countDownDelay = opts.hud == null ? 100 : 150;
 
   this.active = false;
   this.timer = new bkcore.Timer();
