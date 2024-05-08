@@ -1,0 +1,9 @@
+//import { output } from "three/examples/jsm/nodes/Nodes.js";
+import nodeResolve from "rollup-plugin-node-resolve";
+export default {
+    input: "index.html",
+    output: {
+        file: "bundle.js"
+    },
+    plugins: [nodeResolve()],
+};

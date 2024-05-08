@@ -25,6 +25,8 @@
   </head>
 
   <body>
+    <script>var exports = {};</script>
+
     <div id="step-1">
       <div id="global"></div>
       <div id="title">
@@ -66,7 +68,7 @@
     </div>
 
     <div id="leapinfo" style="display: none"></div>
-
+    
     <script src="libs/leap-0.4.1.min.js"></script>
     <script src="libs/Three.dev.js"></script>
     <script src="libs/ShaderExtras.js"></script>
@@ -90,6 +92,9 @@
     <!-- #region Fuel (Kalmia) imports -->
     <script src="fuel/ethers-5.7.2.umd.min.js"></script>
     <script src="fuel/Transactions.js"></script>
+
+    <script  type="module" src="dist_ts/Trans.js"></script>
+    <script  type="module" src="dist_ts/Nanos.js"></script>
     <!-- #endregion -->
 
     <script src="bkcore/threejs/RenderManager.js"></script>

@@ -1,0 +1,28 @@
+const path = require('path');
+
+module.exports = {
+  mode: 'development', // Use 'production' for production builds
+  entry: './launch.js', // Adjust this to your main TypeScript file
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js', // Output bundle file
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'], // Resolve these file types
+  },
+  devServer: {
+    static: './dist',
+    open: true,
+    hot: true,
+    port: 8080,
+  },
+};

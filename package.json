@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "run-p serve live-reload",
+    "tsbuild": "tsc -p tsconfig.json",
     "dev:coffee": "run-p compile:watch serve",
     "serve": "http-server ./ -p 8080",
     "live-reload": "browser-sync start --proxy \"127.0.0.1:8080\" --files \".\"",
@@ -13,11 +14,23 @@
     "compile:watch": "coffee --watch -c ."
   },
   "dependencies": {
+    "axios": "^1.6.8",
     "browser-sync": "^3.0.2",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "moment": "^2.30.1",
+    "three": "^0.164.1"
   },
   "devDependencies": {
     "coffeescript": "^2.7.0",
-    "npm-run-all": "^4.1.5"
+    "fuels": "^0.84.0",
+    "npm-run-all": "^4.1.5",
+    "parcel": "^2.12.0",
+    "rollup": "^4.17.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   }
 }
