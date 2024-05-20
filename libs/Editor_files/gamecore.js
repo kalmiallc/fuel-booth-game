@@ -42,7 +42,7 @@ gamecore.Base = gamecore.Class('gamecore.Base',
         {
             var idString = '';
             if (id) idString = ':'+id;
-            console.log(this.fullName + idString + ' [' + type + '] ' + message);
+            //console.log(this.fullName + idString + ' [' + type + '] ' + message);
         },
 
         warn: function (message)

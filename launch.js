@@ -36,7 +36,7 @@
         return console.error("Error loading " + s + ".");
       },
       onProgress: function(p, t, n) {
-        console.log("LOADED " + t + " : " + n + " ( " + p.loaded + " / " + p.total + " ).");
+        //console.log("LOADED " + t + " : " + n + " ( " + p.loaded + " / " + p.total + " ).");
         return progressbar.style.width = "" + (p.loaded / p.total * 100) + "%";
       }
     });

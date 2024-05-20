@@ -81,5 +81,5 @@ bkcore.hexgl.RaceData.prototype.export = function () {
 bkcore.hexgl.RaceData.prototype.import = function (imp) {
   this.data = imp;
   this.last = this.data.length - 1;
-  console.log(this.data);
+  //console.log(this.data);
 };

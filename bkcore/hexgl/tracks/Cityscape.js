@@ -593,14 +593,14 @@ bkcore.hexgl.tracks.Cityscape = {
 
     var coinGeometry = this.lib.get("geometries", "fuel.coin");
 
-    console.log(coinGeometry);
+    //console.log(coinGeometry);
 
     // coinGeometry.computeTangents();
 
-    console.log("computed T");
+    //console.log("computed T");
 
     var coinMesh = new THREE.Mesh(coinGeometry);
-    console.log(coinMesh);
+    //console.log(coinMesh);
     coinMesh.position.set(-2267, 390, -808); // ShipControls#boosterCheck()
     coinMesh.rotation.set(0, Math.PI / 2, 0);
     scene.add(coinMesh);
@@ -610,7 +610,7 @@ bkcore.hexgl.tracks.Cityscape = {
     coinMesh.receiveShadow = true;
     coinMesh.doubleSided = true;
 
-    console.log(coinMesh);
+    //console.log(coinMesh);
     // #endregion
 
     // CAMERA
