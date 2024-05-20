@@ -106,7 +106,8 @@ bkcore.hexgl.Gameplay = function (opts) {
 bkcore.hexgl.Gameplay.prototype.simu = function () {
   this.lapTimes = [92300, 91250, 90365];
   this.finishTime = this.lapTimes[0] + this.lapTimes[1] + this.lapTimes[2];
-  if (this.hud != null) this.hud.display("Finish");
+  const finishMessage = `Finish: ${this.finishTime}`;
+  if (this.hud != null) this.hud.display(finishMessage);
   this.step = 100;
   this.result = this.results.FINISH;
   this.shipControls.active = false;
@@ -152,6 +153,8 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
   if (this.hud != null) {
     this.hud.resetTime();
     this.hud.display("Get ready", 1);
+    //console.log("--On Track Start-------------------------");
+    fuel.Transactions.onStart("On Start variable");
     this.hud.updateLap(this.lap, this.maxLaps);
   }
 };
@@ -166,9 +169,14 @@ bkcore.hexgl.Gameplay.prototype.end = function (result) {
 
   if (result == this.results.FINISH) {
     if (this.hud != null) this.hud.display("Finish");
+    console.log("-----------finishTime----------------------------");
+    const exp_damage = 23;
+    fuel.Transactions.onRaceFinish(this.finishTime, exp_damage);
     this.step = 100;
   } else if (result == this.results.DESTROYED) {
     if (this.hud != null) this.hud.display("Destroyed");
+    // console.log("-------------onDEAD--------------------------");
+    fuel.Transactions.onDead("Destroyer Variable");
     this.step = 100;
   }
 };

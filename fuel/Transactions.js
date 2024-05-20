@@ -88,6 +88,15 @@ const TRANS_V_1_QUERY = `
     transactionsByOwner(owner: $address, first: 300) {
       nodes {
         id
+      }
+    }
+  }
+  `;
+const TRANS_V_2_QUERY = `
+  query Transactions($address: Address) {
+    transactionsByOwner(owner: $address, first: 300) {
+      nodes {
+        id
         isScript
         rawPayload
         receipts {
@@ -112,7 +121,9 @@ class FuelTransactions {
     this.timeouts = { boost: false };
   }
 
-  async read_address_events() {
+  async read_address_events(show_data) {
+    // this.read_address_events();
+    // READS the last transtactions of an address (that triggered the event - The System Wallet)
     try {
       let response = await fetch('https://beta-5.fuel.network/graphql', {
         method: 'POST',
@@ -129,23 +140,58 @@ class FuelTransactions {
         
       });
       let data = await response.json();
-      console.log('Version  DEPLOYED RACE BOARD Transactions:', data["data"]["transactionsByOwner"]["nodes"]);
+      if(show_data){
+        console.log('Transactions for: ', address, data["data"]["transactionsByOwner"]["nodes"]);
+      }
     } catch (error) {
       console.error('Failed to fetch time data:', error);
     }
   }
 
-  async trigger_event() {
-    try {
-      //await fetch('http://fuelcounter.primozhrastar.si/');
-      let res = await fetch('http://fuelcounter.primozhrastar.si/');
-      console.log("trigger_event");
-      console.log(res);
-  } catch (error) {
-    console.log('Failed to fetch trigger_event:', error);
+  async trigger_start_call(username, email) {
+    console.log(`IN FUNCTION START CALL his_user_name: ${username}\nhis_email: ${email}`);
   }
+
+  async trigger_dead_call(username, email) {
+    console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}\nhis_email: ${email}`);
+  }
+
+  async trigger_finish_call(username, time_seconds, damage) {
+    console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
+    //console.log(`IN FUNCTION FINISH CALL`);
+    if (username === "") {
+      console.log('Aborting on Finish call! Username is empty.\nSet: user("your_username").');
+      return;
+    } 
+    const url = 'http://127.0.0.1:3002/final-score-user';
+    const data = {
+        username: username,
+        time_seconds: time_seconds,
+        damage: damage
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            console.log('Final score submitted successfully at TRX:', result.data.transactionId);
+        } else {
+            console.error('Error submitting final score:', result);
+        }
+    } catch (error) {
+        console.error('Network error:', error);
     }
-async read_last_events() {
+  }
+
+  async read_last_events() {
+    // reads all last events from chain
     try {
       let response = await fetch('https://beta-5.fuel.network/graphql', {
         method: 'POST',
@@ -165,19 +211,65 @@ async read_last_events() {
     }
   }
 
+  async trigger_boost_call(username, time_seconds, damage, distance, speed) {
+    
+    if (username === "") {
+        console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
+        return;
+    } 
+    console.log(`Calling on Boost\nusername: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}\ndistance: ${distance}\nspeed: ${speed}`);
+        
+    const url = `http://127.0.0.1:3002/track-score-user/${username}?time_seconds=${time_seconds}&damage=${damage}&distance=${distance}&speed=${speed}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Score tracked successfully at TRX:', data.data.transactionId);
+            this.read_address_events(true);
+        } else {
+            console.error('Error tracking score:', data);
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+    }
+  }
 
-  async onBoost() {
-    console.log("boost");
-
+  async onBoost(time_seconds, damage, distance, speed) {
+    const username = $('#player_username').val();
+  
     if (!this.timeouts.boost) {
-      this.read_address_events();
-      this.read_last_events();
-      this.trigger_event();
+      //this.read_address_events(false);
+      this.trigger_boost_call(username, time_seconds, damage, distance, speed);
       this.timeouts.boost = true;
       setTimeout(() => {
         this.timeouts.boost = false;
       }, 200);
     }
+  }
+
+
+  async onStart(variable_temporary) {
+    const username = $('#player_username').val();
+    //console.log(`On START his_user_name: ${username}\ndata 1: ${variable_temporary}`);
+    this.read_address_events(true);
+    this.trigger_finish_call(username, 622, 2);
+    //this.trigger_start_call(username, variable_temporary);
+
+  }
+
+  async onDead(variable_temporary) {
+    const his_user_name = $('#player_username').val();
+    console.log(`On DEAD his_user_name: ${his_user_name}\ndata 1: ${variable_temporary}`);
+
+    this.trigger_dead_call(his_user_name, variable_temporary);
+
+  }
+
+  async onRaceFinish(time_seconds, damage) {
+    const username = $('#player_username').val();
+    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
+
+    this.trigger_finish_call(username, time_seconds, damage);
   }
 }
 

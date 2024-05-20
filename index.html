@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/multi.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
       body {
         padding:0;
@@ -21,11 +22,144 @@
         left: 0;
         width: 100%;
       }
+
+      /* Style for the input field */
+input[type="text"] {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Style for the button */
+button {
+  padding: 10px;
+  margin-top: 5px;
+  background-color: #f66439;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 26px;
+}
+
+/* Style for the button on hover */
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Style for the placeholder text */
+::placeholder {
+  color: #1c1c1b;
+  font-size: 16px;
+  text-align: center;
+}
+#high_score_panel {
+  display: none;
+  position: fixed;
+  top: 50px; /* Adjust this value to position the panel where you want */
+  left: 50px; /* Adjust this value to position the panel where you want */
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px 30px 5px 5px;
+  border-radius: 5px;
+  z-index: 999; /* Ensure it appears above other content */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
+}
+#username_text_error_small {
+  color: red;
+  font-size: small;
+  margin-top: -15px;
+  display: block;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
+}
+#display_username {
+    width: auto;
+    color: #f8854b;
+    text-shadow: 0 0 10px rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.1); /* rgba(255, 255, 255, 0.8) transparent background */
+    font-size: 2.8em;
+    margin: 0 auto; /* Center the element horizontally */
+    padding: 10px; /* Optional: Add padding for better appearance */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    position: fixed;
+    top: 5px; /* Adjust this value to position the panel where you want */
+    left: 5px; /* Adjust this value to position the panel where you want */
+    z-index: 999; /* Ensure it appears above other content */
+}
+
+
     </style>
   </head>
 
   <body>
-    <script>var exports = {};</script>
+    <div id="high_score_panel">
+      HIGH SCORES:
+      <ol id="high_score_list"></ol>
+    </div>
+      <i id="display_username"></i>
+      <!-- CALL FUEL API-->
+    <script>
+      async function cronScoreBoard() {
+        const url = 'http://127.0.0.1:3002/score-user/';
+        // const url = 'http://127.0.0.1:3002/players/';
+        try {
+          let response = await fetch(url);
+          if (response.ok) {
+            let data = await response.json();
+           // console.log("This code will execute every 5 seconds");
+          //  console.log(data.data.users);
+            // for loop and append child to <ul>
+                     // Get the <ul> element by its id
+            let ulElement = document.getElementById('high_score_list');
+            
+            // Clear any existing list items
+            ulElement.innerHTML = '';
+
+            // Loop through the users and create a list item for each user
+            data.data.users.forEach(user => {
+              let liElement = document.createElement('li');
+              //liElement.textContent = `${user.username}, level: ${user.level}   - ${user.highScore}`;
+              liElement.textContent = `${user.username} - ${user.highScore}`;
+              ulElement.appendChild(liElement);
+
+              //console.log(user.username  + " .. "+ document.getElementById('player_username').value);
+              if(user.username == document.getElementById('player_username').value){
+                $('#display_username').text(user.username);
+              }
+            });
+          } else {
+            console.error('Error fetching data:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+    
+      // Set interval to execute the function every 5 seconds (5000 milliseconds)
+      //let intervalId = setInterval(cronScoreBoard, 3000);
+    
+    </script>
+    <input type="text" style="display: none;" name="player_username" id="player_username" >
+ 
+
+    <script>var exports = {};
+    $(document).ready(function(){
+      $('#display_username').text($('#player_username').val());
+      $('#start_button_username').text($('#player_username').val());
+    });
+    
+    </script>
+
+    <script>
+    function user(username){
+      $('#player_username').val(username);
+      $('#display_username').text(username);
+      $('#start_button_username').text(username);
+    }
+        
+    </script>
 
     <div id="step-1">
       <div id="global"></div>
@@ -33,12 +167,19 @@
       </div>
       <div id="menucontainer">
         <div id="menu">
-          <div id="start">Start</div>
+          <div id="start">Start <i id="start_button_username"></i></div>
           <div id="s-controlType">Controls: Keyboard</div>
           <div id="s-quality">Quality: High</div>
           <div id="s-hud">HUD: On</div>
           <div id="s-godmode" style="display: none">Godmode: Off</div>
           <div id="s-credits">Credits</div>
+          <div id="s-new_user">
+            Register:   <br>
+            <input type="text" name="username" id="username_input" placeholder="Username"/>
+            <small id="username_text_error_small"></small>
+            <input type="text" name="user_email" id="user_email_input" placeholder="E-mail"/><br>
+            <button id="create_user_button">Create</button><br><br>
+        </div>
         </div>
       </div>
     </div>
@@ -93,8 +234,9 @@
     <script src="fuel/ethers-5.7.2.umd.min.js"></script>
     <script src="fuel/Transactions.js"></script>
 
-    <script  type="module" src="dist_ts/Trans.js"></script>
-    <script  type="module" src="dist_ts/Nanos.js"></script>
+    <!-- FUELS CALL via TypeScript SDK -->
+    <!--script  type="module" src="dist_ts/Trans.js"></script-->
+    <!--script  type="module" src="dist_ts/Nanos.js"></script-->
     <!-- #endregion -->
 
     <script src="bkcore/threejs/RenderManager.js"></script>
@@ -116,5 +258,70 @@
     <script src="bkcore/hexgl/HexGL.js"></script>
 
     <script src="launch.js"></script>
+
+<!-- CALL FUEL API-->
+<script>
+
+  $(document).ready(function(){
+      $('#create_user_button').click(function(){
+        $('#username_input').css('border', "1px solid #ccc");
+          //console.log("inside create user");
+          //$('#create_user_button').prop('disabled', true);
+          $('#create_user_button').css('display', "none");
+          
+
+          $('#username_text_error_small').text("");
+          var username = $('#username_input').val();
+          var user_email = $('#user_email_input').val();
+          
+
+          var body_data = { username: username };
+    
+          if (user_email !== "") {
+            body_data.email = user_email;
+          }
+          if(username !== "") {
+              $.ajax({
+                  type: 'POST',
+                  url: 'http://127.0.0.1:3002/users',
+                  contentType: 'application/json',
+                  data: JSON.stringify(body_data),
+                  success: function(response) {
+                      console.log('User created successfully at TRX: ',response.data.player_profile.register_transaction_id);
+                      console.log(response.data.player_profile) ;
+                      //console.log(response);
+                      //console.log(response.data.transactionId);
+                      //alert('Created user \n\n'+ response.data.username+ ' \n\n at trx: \n '+ response.data.transactionId);
+                     
+                      $('#create_user_button').css('display', "inline-block");
+                      $('#username_input').val("");
+                      $('#user_email_input').val("");
+                      $('#username_text_error_small').text("");
+                      $('#player_username').val(username);
+                      $('#display_username').text(username);
+                      $('#start_button_username').text(username);
+                      // Optionally, do something with the response here
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('Error creating user:', error);
+                      //alert('Username Exists');
+                      $('#username_input').css('border', "2px solid red");
+                      $('#create_user_button').css('display', "inline-block");
+                      $('#username_text_error_small').text("Username Exists");
+                      $('#username_input').val("");
+                      $('#user_email_input').val("");
+                  }
+              });
+          } else {
+              //alert('Please enter your username');
+              $('#username_input').css('border', "2px solid red");
+              $('#username_text_error_small').text('Please enter your username');
+              console.error('Username cannot be empty');
+              $('#create_user_button').css('display', "inline-block");
+          }
+      });
+  });
+</script>
+
   </body>
 </html>

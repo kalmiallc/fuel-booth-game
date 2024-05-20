@@ -592,7 +592,12 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
   var color = this.collisionMap.getPixel(x, z);
 
   if (color.r == 255 && color.g < 127 && color.b < 127) {
-    fuel.Transactions.onBoost();
+
+    const time_seconds = 22; // @ TODO-FUEL: this.timer.time.elapsed;
+    const damage = 1 - this.shield; 
+    const current_distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+    fuel.Transactions.onBoost(time_seconds, damage, current_distance, this.speed);
+    
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;
   }
@@ -633,6 +638,7 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function (dt) {
 
     // Shield
     var sr = this.getRealSpeed() / this.maxSpeed;
+    // Comment next line for infinite life, no damage, immortal, FUELS, fuels, sway,
     this.shield -= sr * sr * 0.8 * this.shieldDamage;
 
     // Repulsion
