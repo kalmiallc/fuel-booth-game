@@ -85,7 +85,7 @@ const MESSAGES_QUERY = `
 
 const TRANS_V_1_QUERY = `
   query Transactions($address: Address) {
-    transactionsByOwner(owner: $address, first: 300) {
+    transactionsByOwner(owner: $address, first: 3000) {
       nodes {
         id
       }
@@ -141,7 +141,7 @@ class FuelTransactions {
       });
       let data = await response.json();
       if(show_data){
-        console.log('Transactions for: ', address, data["data"]["transactionsByOwner"]["nodes"]);
+        console.log('#',data["data"]["transactionsByOwner"]["nodes"].length, 'TRX', data["data"]["transactionsByOwner"]["nodes"]);
       }
     } catch (error) {
       console.error('Failed to fetch time data:', error);
@@ -157,17 +157,20 @@ class FuelTransactions {
   }
 
   async trigger_finish_call(username, time_seconds, damage) {
-    console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
+    //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
     //console.log(`IN FUNCTION FINISH CALL`);
     if (username === "") {
       console.log('Aborting on Finish call! Username is empty.\nSet: user("your_username").');
       return;
     } 
-    const url = 'http://127.0.0.1:3002/final-score-user';
+    const url = 'http://127.0.0.1:3002/users/score';
     const data = {
         username: username,
         time_seconds: time_seconds,
-        damage: damage
+        damage: damage,
+        distance: "0",
+        speed: "0",
+        score_type: "final",
     };
 
     try {
@@ -181,7 +184,8 @@ class FuelTransactions {
 
         const result = await response.json();
         if (response.ok) {
-            console.log('Final score submitted successfully at TRX:', result.data.transactionId);
+            // console.log('Final score submitted successfully:');
+            console.log('+1 TRX ', result.data.transactionId);
         } else {
             console.error('Error submitting final score:', result);
         }
@@ -212,33 +216,46 @@ class FuelTransactions {
   }
 
   async trigger_boost_call(username, time_seconds, damage, distance, speed) {
-    
     if (username === "") {
-        console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
-        return;
-    } 
-    console.log(`Calling on Boost\nusername: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}\ndistance: ${distance}\nspeed: ${speed}`);
-        
-    const url = `http://127.0.0.1:3002/track-score-user/${username}?time_seconds=${time_seconds}&damage=${damage}&distance=${distance}&speed=${speed}`;
+      console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
+      return;
+    }
+    console.log(`${username} on B(${distance.toFixed(2)}) driving at ${speed.toFixed(2)} speed, for ${time_seconds} seconds, enduring ${damage.toFixed(2)} damage.`);
+   
+    if (damage == 0) {damage = "0" }
+    if (speed == 0) {speed = "0" }
+    const url = 'http://127.0.0.1:3002/users/score';
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (response.ok) {
-            console.log('Score tracked successfully at TRX:', data.data.transactionId);
-            this.read_address_events(true);
-        } else {
-            console.error('Error tracking score:', data);
-        }
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          time_seconds: time_seconds,
+          damage: damage,
+          distance: distance,
+          speed: speed,
+          score_type: 'track',
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // console.log('Score tracked successfully at TRX:', data.data.transactionId);
+        console.log('+1 TRX ', data.data.transactionId);
+        this.read_address_events(true);
+      } else {
+        console.error('Error tracking score:', data);
+      }
     } catch (error) {
-        console.error('Network error:', error);
+      console.error('Network error:', error);
     }
   }
-
   async onBoost(time_seconds, damage, distance, speed) {
-    const username = $('#player_username').val();
+    const username = $("#player_username").val();
   
     if (!this.timeouts.boost) {
-      //this.read_address_events(false);
       this.trigger_boost_call(username, time_seconds, damage, distance, speed);
       this.timeouts.boost = true;
       setTimeout(() => {
@@ -250,11 +267,13 @@ class FuelTransactions {
 
   async onStart(variable_temporary) {
     const username = $('#player_username').val();
-    //console.log(`On START his_user_name: ${username}\ndata 1: ${variable_temporary}`);
-    this.read_address_events(true);
-    this.trigger_finish_call(username, 622, 2);
     //this.trigger_start_call(username, variable_temporary);
 
+
+    this.read_address_events(true);
+    //calling with mock values
+    this.trigger_finish_call(username, username.length, 56+username.length);
+    
   }
 
   async onDead(variable_temporary) {

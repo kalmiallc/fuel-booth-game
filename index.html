@@ -287,12 +287,9 @@ button:hover {
                   contentType: 'application/json',
                   data: JSON.stringify(body_data),
                   success: function(response) {
-                      console.log('User created successfully at TRX: ',response.data.player_profile.register_transaction_id);
-                      console.log(response.data.player_profile) ;
-                      //console.log(response);
-                      //console.log(response.data.transactionId);
-                      //alert('Created user \n\n'+ response.data.username+ ' \n\n at trx: \n '+ response.data.transactionId);
-                     
+                      console.log('+1 TRX: ',response.data.register_transaction_id);
+                      console.log('User created successfully ',response.data);
+                      
                       $('#create_user_button').css('display', "inline-block");
                       $('#username_input').val("");
                       $('#user_email_input').val("");
