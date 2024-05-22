@@ -185,6 +185,7 @@ class FuelTransactions {
         const result = await response.json();
         if (response.ok) {
             // console.log('Final score submitted successfully:');
+            console.log('high-score ', result.data.high_score);
             console.log('+1 TRX ', result.data.transactionId);
         } else {
             console.error('Error submitting final score:', result);
