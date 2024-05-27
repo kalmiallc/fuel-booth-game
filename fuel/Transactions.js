@@ -1,89 +1,7 @@
 const fuel = window.fuel || {};
 
-const LATEST_TRANSACTIONS_QUERY = `
-  query LatestTransactions {
-    transactions(last: 15) {
-      nodes {
-        id
-        inputs {
-          __typename
-          ... on InputCoin {
-            owner
-            utxoId
-            amount
-            assetId
-          }
-          ... on InputContract {
-            utxoId
-            contract {
-              id
-            }
-          }
-          ... on InputMessage {
-            sender
-            recipient
-            amount
-            data
-          }
-        }
-        outputs {
-          __typename
-          ... on CoinOutput {
-            to
-            amount
-            assetId
-          }
-          ... on ContractOutput {
-            inputIndex
-            balanceRoot
-            stateRoot
-          }
-          ... on ChangeOutput {
-            to
-            amount
-            assetId
-          }
-          ... on VariableOutput {
-            to
-            amount
-            assetId
-          }
-          ... on ContractCreated {
-            contract {
-              id
-            }
-            stateRoot
-          }
-        }
-        status {
-          __typename
-          ... on FailureStatus {
-            reason
-            programState {
-              returnType
-            }
-          }
-        }
-      }
-    }
-  }`;
 
-const MESSAGES_QUERY = `
-  query MessageInfo($address: Address) {
-    transactionsByOwner(owner: $address, first: 5) {
-        nodes {
-          amount
-          sender
-          recipient
-          nonce
-          data
-          daHeight
-        }
-      }
-    }`;
-
-
-const TRANS_V_1_QUERY = `
+const TRANS_V_1_QUERY_TRANSACTIONS_ID_FOR_ADDRESS = `
   query Transactions($address: Address) {
     transactionsByOwner(owner: $address, first: 3000) {
       nodes {
@@ -92,24 +10,20 @@ const TRANS_V_1_QUERY = `
     }
   }
   `;
-const TRANS_V_2_QUERY = `
+
+const TRANS_TRACK_EVENT_QUERY = `
   query Transactions($address: Address) {
     transactionsByOwner(owner: $address, first: 300) {
       nodes {
-        id
-        isScript
-        rawPayload
         receipts {
           __typename
-          ... on Receipt {
-            receiptType
-            data
-          }
+          receiptType
+          data
         }
       }
     }
   }
-  `;
+`;
 const address = "0xeeff1c9a4d500e3af174d0db0115ef2917d9e804e68009b5c1e12aeaffb1323c";
 
 
@@ -132,7 +46,7 @@ class FuelTransactions {
           Accept: 'application/json',
         },
         body: JSON.stringify({ 
-          query: TRANS_V_1_QUERY,
+          query: TRANS_V_1_QUERY_TRANSACTIONS_ID_FOR_ADDRESS,
           variables: {
             address: address
           }
@@ -145,6 +59,88 @@ class FuelTransactions {
       }
     } catch (error) {
       console.error('Failed to fetch time data:', error);
+    }
+  }
+
+
+  
+  async read_address_events_receipts() {
+
+    const extractAndConvertValuesFromHex = (hexString) => {
+      // Remove the '0x' prefix if present
+      const cleanHex = hexString.startsWith('0x') ? hexString.slice(2) : hexString;
+    
+      // Define the positions and lengths of the values to extract
+      const positions = [
+        { start: 0, length: 16 },
+        { start: 16, length: 16 },
+        { start: 32, length: 16 },
+        { start: 48, length: 16 },
+        { start: 64, length: 16 },
+        { start: 80, length: 64 }  // This position (username-hash) will be skipped for number conversion
+      ];
+    
+      // Extract values based on defined positions
+      const hexValues = positions.map(pos => cleanHex.slice(pos.start, pos.start + pos.length));
+    
+      // Convert hex values to decimal, except for the last one (username-hash) which remains in hex
+      const decimalValues = hexValues.slice(0, -1).map(value => parseInt(value, 16));
+      const lastValue = hexValues[hexValues.length - 1];
+    
+      return [...decimalValues, lastValue];
+    };
+    
+  // Function to filter and log track events
+  const logTrackEvents = (logDataFields) => {
+    logDataFields.forEach(hexString => {
+      const values = extractAndConvertValuesFromHex(hexString);
+      // Check if the value at position [2] is 0 (position 2 is status)
+      // 0 = track -> we use this event in the list of transactions
+      // 1 = final -> we skip using this data in the list of transactions
+      if (values[2] === 0) {
+        console.log('Track Event:');
+        console.log('Time:', values[0]);
+        console.log('Speed:', values[1]);
+        console.log('Damage:', values[3]);
+        console.log('Distance:', values[4]);
+        console.log('Identifier:', values[5]);
+      }
+    });
+  };
+
+    try {
+      let response = await fetch('https://beta-5.fuel.network/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ 
+          query: TRANS_TRACK_EVENT_QUERY,
+          variables: {
+            address: address
+          }
+         }),
+        
+      });
+      let data = await response.json();
+      // console.log(data);
+      const transactions = data["data"]["transactionsByOwner"]["nodes"];
+
+      // Flatten the array of receipts
+      const allReceipts = transactions.flatMap(tx => tx.receipts);
+  
+      // Filter receipts by type 'LOG_DATA'
+      const logDataReceipts = allReceipts.filter(receipt => receipt.receiptType === 'LOG_DATA');
+      const logDataFields = logDataReceipts.map(receipt => receipt.data);
+
+      
+      logTrackEvents(logDataFields);
+      
+      // console.log(data["data"]["transactionsByOwner"]["nodes"]);
+
+    } catch (error) {
+      console.error('Failed to fetch receipts data:', error);
     }
   }
 
@@ -192,27 +188,6 @@ class FuelTransactions {
         }
     } catch (error) {
         console.error('Network error:', error);
-    }
-  }
-
-  async read_last_events() {
-    // reads all last events from chain
-    try {
-      let response = await fetch('https://beta-5.fuel.network/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ 
-          query: LATEST_TRANSACTIONS_QUERY
-         }),
-        
-      });
-      let data = await response.json();
-      console.log('LATEST 15 FUEL TRANSACTIONS:', data["data"]["transactions"]["nodes"]);
-    } catch (error) {
-      console.error('Failed to fetch time data:', error);
     }
   }
 
@@ -270,7 +245,7 @@ class FuelTransactions {
     const username = $('#player_username').val();
     //this.trigger_start_call(username, variable_temporary);
 
-
+    this.read_address_events_receipts();
     this.read_address_events(true);
     //calling with mock values
     this.trigger_finish_call(username, username.length, 56+username.length);
