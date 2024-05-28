@@ -15,6 +15,7 @@ bkcore.hexgl.Gameplay = function (opts) {
   this.countDownDelay = opts.hud == null ? 100 : 150;
 
   this.active = false;
+  this.trackInterval = null;
   this.timer = new bkcore.Timer();
   this.modes = {
     timeattack: null,
@@ -48,7 +49,7 @@ bkcore.hexgl.Gameplay = function (opts) {
   this.lap = 1;
   this.lapTimes = [];
   this.lapTimeElapsed = 0;
-  this.maxLaps = 3;
+  this.maxLaps = 1;
   this.score = null;
   this.finishTime = null;
   this.onFinish =
@@ -156,6 +157,15 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
     //console.log("--On Track Start-------------------------");
     fuel.Transactions.onStart("On Start variable");
     this.hud.updateLap(this.lap, this.maxLaps);
+
+    this.trackInterval = setInterval(() => {      
+      console.log(this.shipControls)
+      const time_seconds = Math.round(22 + Math.random() * 10); // @ TODO-FUEL: this.timer.time.elapsed;
+      const damage = Math.abs(this.shipControls.getShield(100)); 
+      const current_distance = time_seconds * 5;
+      const speed = this.shipControls.getRealSpeed(100); 
+    fuel.Transactions.onTrack(time_seconds, damage, current_distance, speed);
+    }, 3000)
   }
 };
 
@@ -173,11 +183,13 @@ bkcore.hexgl.Gameplay.prototype.end = function (result) {
     const exp_damage = 23;
     fuel.Transactions.onRaceFinish(this.finishTime, exp_damage);
     this.step = 100;
+    clearInterval(this.trackInterval);
   } else if (result == this.results.DESTROYED) {
     if (this.hud != null) this.hud.display("Destroyed");
     // console.log("-------------onDEAD--------------------------");
     fuel.Transactions.onDead("Destroyer Variable");
     this.step = 100;
+    clearInterval(this.trackInterval);
   }
 };
 
