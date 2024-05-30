@@ -245,6 +245,40 @@ class FuelTransactions {
       if (response.ok) {
         // console.log('Score tracked successfully at TRX:', data.data.transactionId);
         console.log('+1 TRX ', data.data.transactionId);
+        // this.read_address_events(true);
+      } else {
+        console.error('Error tracking score:', data);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  }
+
+  async trigger_boost_call(username, time_seconds, distance) {
+    if (username === "") {
+      console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
+      return;
+    }
+    console.log(`${username} on B(${distance.toFixed(2)}), for ${time_seconds} seconds`);
+   
+    
+    try {
+      const response = await fetch(API_SCORE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          time_seconds: time_seconds,
+          distance: distance,
+          score_type: 'RACING',
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // console.log('Score tracked successfully at TRX:', data.data.transactionId);
+        console.log('+1 TRX ', data.data.transactionId);
         this.read_address_events(true);
       } else {
         console.error('Error tracking score:', data);
@@ -263,6 +297,12 @@ class FuelTransactions {
         this.timeouts.boost = false;
       }, 200);
     }
+  } 
+
+  async onTrack(time_seconds, damage, distance, speed) {
+    const username = $('#player_username').val();
+    this.trigger_playing_call(username, time_seconds, damage, distance, speed);
+    
   }
 
 

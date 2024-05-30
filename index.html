@@ -221,7 +221,6 @@ button:hover {
 
 <!-- CALL FUEL API-->
 <script>
-
   $(document).ready(function(){
       $('#create_user_button').click(function(){
         $('#username_input').css('border', "1px solid #ccc");
@@ -250,14 +249,8 @@ button:hover {
                       console.log('+1 TRX: ',response.data.register_transaction_id);
                       console.log('User created successfully ',response.data);
                       
-                      $('#create_user_button').css('display', "inline-block");
-                      $('#username_input').val("");
-                      $('#user_email_input').val("");
-                      $('#username_text_error_small').text("");
-                      $('#player_username').val(username);
-                      $('#display_username').text(username);
-                      $('#start_button_username').text(username);
                       // Optionally, do something with the response here
+                      onRegistered(response.data)
                   },
                   error: function(xhr, status, error) {
                       console.error('Error creating user:', error);
@@ -277,6 +270,37 @@ button:hover {
               $('#create_user_button').css('display', "inline-block");
           }
       });
+    
+
+    // signal the parent that we're loaded.
+    if (window.opener) {
+      window.opener.postMessage('loaded', '*');
+    } else if (window.parent) {
+      window.parent.postMessage('loaded', '*');
+    }
+    
+    function onRegistered(user){
+      $('#create_user_button').css('display', "inline-block");
+      $('#username_input').val("");
+      $('#user_email_input').val("");
+      $('#username_text_error_small').text("");
+      $('#player_username').val(user.username);
+      $('#display_username').text(user.username);
+      $('#start_button_username').text(user.username);
+    }
+            
+    // listen for messages from the parent.
+    const listenRegister = event => {
+      console.log(event)
+      if (event.data?.username) {
+      onRegistered(event.data);
+
+      $('#s-new_user').css('display', "none");
+
+        window.removeEventListener('message', listenRegister, false);
+      }
+    };
+    window.addEventListener('message', listenRegister, false); 
   });
 </script>
 
