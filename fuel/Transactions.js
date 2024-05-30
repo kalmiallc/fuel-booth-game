@@ -1,5 +1,12 @@
 const fuel = window.fuel || {};
 
+const address = "0xe58df86a96a6d74bf4481657ed4b083d455df4aa05ae86a149f5d2b24db2262a";
+const statusMessages = {
+  0: "Racing Event",
+  1: "Finished Event",
+  2: "Destroyed Event"
+};
+
 
 const TRANS_V_1_QUERY_TRANSACTIONS_ID_FOR_ADDRESS = `
   query Transactions($address: Address) {
@@ -24,8 +31,6 @@ const TRANS_TRACK_EVENT_QUERY = `
     }
   }
 `;
-const address = "0x5eea5af7865d6733e7b7620d0979c772a54887fd2458a5a4e1381a4fd5382fbe";
-
 
 class FuelTransactions {
   timeouts = {
@@ -87,19 +92,17 @@ class FuelTransactions {
     
       return [...decimalValues, lastValue];
     };
-    
+     
   // Function to filter and log track events
   const logTrackEvents = (logDataFields) => {
     logDataFields.forEach(hexString => {
       const values = extractAndConvertValuesFromHex(hexString);
-      // Check if the value at position [2] is 0 (position 2 is status)
-      // 0 = track -> we use this event in the list of transactions
-      // 1 = final -> we skip using this data in the list of transactions
-      if (values[1] === 0) {
-        console.log('Track Event:');
-        console.log('Time:', values[0]);
-        console.log('Distance:', values[2]);
-        console.log('Identifier:', values[3]);
+      const status = values[1];
+      const message = statusMessages[status];
+      if (message) {
+        console.log(`|${status}||${message}(Time: ${values[0]} Distance: ${values[2]})\nHash Identifier: ${values[3]}`);
+      } else {
+        console.log(`|${status}||Unknown Event(Time: ${values[0]} Distance: ${values[2]})\nHash Identifier: ${values[3]}`);
       }
     });
   };
@@ -144,11 +147,42 @@ class FuelTransactions {
     console.log(`IN FUNCTION START CALL his_user_name: ${username}\nhis_email: ${email}`);
   }
 
-  async trigger_dead_call(username, email) {
-    console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}\nhis_email: ${email}`);
+  async trigger_dead_call(username, distance) {
+    console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}\ndistance: ${distance}`);
+    if (username === "") {
+      console.log('Aborting on Destroy call! Username is empty.\nSet: user("your_username").');
+      return;
+    } 
+    const url = 'http://127.0.0.1:3002/users/score';
+    const data = {
+      username: username,
+      time_seconds: 1,
+      distance: distance,
+      score_type: "DESTROYED",
+    };
+    try {
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+          console.log('Destroyed score submitted successfully:');
+          console.log('high-score ', result.data.high_score);
+          console.log('+1 TRX ', result.data.transactionId);
+      } else {
+          console.error('Error submitting destroyed score:', result);
+      }
+  } catch (error) {
+      console.error('Network error:', error);
+  }
   }
 
-  async trigger_finish_call(username, time_seconds, distance) {
+  async trigger_finish_call(username, time_seconds) {
     //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
     //console.log(`IN FUNCTION FINISH CALL`);
     if (username === "") {
@@ -159,7 +193,7 @@ class FuelTransactions {
     const data = {
         username: username,
         time_seconds: time_seconds,
-        distance: distance,
+        distance: 1,
         score_type: "FINISHED",
     };
 
@@ -174,7 +208,7 @@ class FuelTransactions {
 
         const result = await response.json();
         if (response.ok) {
-            // console.log('Final score submitted successfully:');
+            console.log('Finished score submitted successfully:');
             console.log('high-score ', result.data.high_score);
             console.log('+1 TRX ', result.data.transactionId);
         } else {
@@ -238,23 +272,23 @@ class FuelTransactions {
     this.read_address_events_receipts();
     this.read_address_events(true);
     //calling with mock values
-    this.trigger_finish_call(username, username.length, 212+username.length);
+    // this.trigger_finish_call(username, 212+username.length);
     
   }
 
-  async onDead(variable_temporary) {
-    const his_user_name = $('#player_username').val();
-    console.log(`On DEAD his_user_name: ${his_user_name}\ndata 1: ${variable_temporary}`);
+  async onDead(distance) {
+    const username = $('#player_username').val();
+    console.log(`On DEAD his_user_name: ${username}\ndistance: ${distance}`);
 
-    this.trigger_dead_call(his_user_name, variable_temporary);
+    this.trigger_dead_call(username, distance);
 
   }
 
-  async onRaceFinish(time_seconds, distance) {
+  async onRaceFinish(time_seconds) {
     const username = $('#player_username').val();
-    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}\distance: ${distance}`);
+    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}`);
 
-    this.trigger_finish_call(username, time_seconds, distance);
+    this.trigger_finish_call(username, time_seconds);
   }
 }
 

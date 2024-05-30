@@ -170,13 +170,12 @@ bkcore.hexgl.Gameplay.prototype.end = function (result) {
   if (result == this.results.FINISH) {
     if (this.hud != null) this.hud.display("Finish");
     console.log("-----------finishTime----------------------------");
-    const exp_damage = 23;
-    fuel.Transactions.onRaceFinish(this.finishTime, exp_damage);
+    fuel.Transactions.onRaceFinish(this.finishTime);
     this.step = 100;
   } else if (result == this.results.DESTROYED) {
     if (this.hud != null) this.hud.display("Destroyed");
     // console.log("-------------onDEAD--------------------------");
-    fuel.Transactions.onDead("Destroyer Variable");
+    fuel.Transactions.onDead(1230);
     this.step = 100;
   }
 };
