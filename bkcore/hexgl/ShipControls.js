@@ -594,8 +594,39 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
   if (color.r == 255 && color.g < 127 && color.b < 127) {
 
     const time_seconds = 22; // @ TODO-FUEL: this.timer.time.elapse
-    const current_distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-    fuel.Transactions.onBoost(time_seconds, current_distance);
+    // const current_distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+
+    
+    // Assume totalDistance is a property of the object, initialized to 0
+    if (typeof this.totalDistance === 'undefined') {
+      this.totalDistance = 0;
+    }
+
+    // Represent the small y-velocity value as a variable
+    let smallVelocityY = this.currentVelocity.y;
+
+    // Calculate current position assuming movement only in the y-direction
+    let currentPosition = {
+      x: this.collisionPreviousPosition.x + this.currentVelocity.x,
+      y: this.collisionPreviousPosition.y + smallVelocityY,
+      z: this.collisionPreviousPosition.z + this.currentVelocity.z
+    };
+
+    // Calculate the Euclidean distance between previous and current position
+    let segmentDistance = Math.sqrt(
+      Math.pow(currentPosition.x - this.collisionPreviousPosition.x, 2) +
+      Math.pow(currentPosition.y - this.collisionPreviousPosition.y, 2) +
+      Math.pow(currentPosition.z - this.collisionPreviousPosition.z, 2)
+    );
+
+    // Update the total distance traveled
+    this.totalDistance += segmentDistance;
+
+    // Log the segment distance and the total distance for debugging
+    // console.log("Segment distance: ", segmentDistance);
+    console.log("Total distance: ", this.totalDistance);
+    
+    fuel.Transactions.onBoost(time_seconds, this.totalDistance);
     
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;
