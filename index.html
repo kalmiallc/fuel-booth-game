@@ -273,11 +273,31 @@ button:hover {
     
 
     // signal the parent that we're loaded.
-    if (window.opener) {
+    
+
+    if(window.location.search){
+      const params = getDecodedPathAndQuery(window.location.href)
+      if(params.query?.username){
+        onRegistered(params.query)
+        $('#s-new_user').css('display', "none");
+      }
+    } else if (window.opener) {
       window.opener.postMessage('loaded', '*');
     } else if (window.parent) {
       window.parent.postMessage('loaded', '*');
-    }
+    } 
+
+    // listen for messages from the parent.
+    const listenRegister = event => {
+      if (event.data?.username) {
+      onRegistered(event.data);
+
+      $('#s-new_user').css('display', "none");
+
+        window.removeEventListener('message', listenRegister, false);
+      }
+    };
+    window.addEventListener('message', listenRegister, false); 
     
     function onRegistered(user){
       $('#create_user_button').css('display', "inline-block");
@@ -288,19 +308,32 @@ button:hover {
       $('#display_username').text(user.username);
       $('#start_button_username').text(user.username);
     }
-            
-    // listen for messages from the parent.
-    const listenRegister = event => {
-      console.log(event)
-      if (event.data?.username) {
-      onRegistered(event.data);
-
-      $('#s-new_user').css('display', "none");
-
-        window.removeEventListener('message', listenRegister, false);
+    
+    function getDecodedPathAndQuery(routeStr) {
+      if (!routeStr || typeof routeStr !== 'string') {
+        return '';
       }
-    };
-    window.addEventListener('message', listenRegister, false); 
+
+      const parts = decodeURIComponent(routeStr).split('?');
+
+      if (parts.length > 1 && !!parts[1]) {
+        // Path + query
+        const queryStrings = parts[1].split('&');
+        const query = {};
+        queryStrings.forEach(x => {
+          if (x) {
+            const sides = x.split('=');
+            if (sides.length > 1) {
+              query[sides[0]] = sides[1];
+            }
+          }
+        });
+        return { path: parts[0], query };
+      } else {
+        // Just path
+        return parts[0];
+      }
+    }            
   });
 </script>
 
