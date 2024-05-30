@@ -1,6 +1,8 @@
 const fuel = window.fuel || {};
-
 const address = "0xe58df86a96a6d74bf4481657ed4b083d455df4aa05ae86a149f5d2b24db2262a";
+
+const API_SCORE_URL = 'http://127.0.0.1:3002/users/score';
+
 const statusMessages = {
   0: "Racing Event",
   1: "Finished Event",
@@ -153,7 +155,7 @@ class FuelTransactions {
       console.log('Aborting on Destroy call! Username is empty.\nSet: user("your_username").');
       return;
     } 
-    const url = 'http://127.0.0.1:3002/users/score';
+    
     const data = {
       username: username,
       time_seconds: 1,
@@ -161,7 +163,7 @@ class FuelTransactions {
       score_type: "DESTROYED",
     };
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_SCORE_URL, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -189,7 +191,6 @@ class FuelTransactions {
       console.log('Aborting on Finish call! Username is empty.\nSet: user("your_username").');
       return;
     } 
-    const url = 'http://127.0.0.1:3002/users/score';
     const data = {
         username: username,
         time_seconds: time_seconds,
@@ -198,7 +199,7 @@ class FuelTransactions {
     };
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(API_SCORE_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -226,9 +227,9 @@ class FuelTransactions {
     }
     console.log(`${username} on B(${distance.toFixed(2)}), for ${time_seconds} seconds`);
    
-    const url = 'http://127.0.0.1:3002/users/score';
+    
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_SCORE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

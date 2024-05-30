@@ -100,47 +100,7 @@ button:hover {
     </div>
       <i id="display_username"></i>
       <!-- CALL FUEL API-->
-    <script>
-      async function cronScoreBoard() {
-        const url = 'http://127.0.0.1:3002/score-user/';
-        // const url = 'http://127.0.0.1:3002/players/';
-        try {
-          let response = await fetch(url);
-          if (response.ok) {
-            let data = await response.json();
-           // console.log("This code will execute every 5 seconds");
-          //  console.log(data.data.users);
-            // for loop and append child to <ul>
-                     // Get the <ul> element by its id
-            let ulElement = document.getElementById('high_score_list');
-            
-            // Clear any existing list items
-            ulElement.innerHTML = '';
-
-            // Loop through the users and create a list item for each user
-            data.data.users.forEach(user => {
-              let liElement = document.createElement('li');
-              //liElement.textContent = `${user.username}, level: ${user.level}   - ${user.highScore}`;
-              liElement.textContent = `${user.username} - ${user.highScore}`;
-              ulElement.appendChild(liElement);
-
-              //console.log(user.username  + " .. "+ document.getElementById('player_username').value);
-              if(user.username == document.getElementById('player_username').value){
-                $('#display_username').text(user.username);
-              }
-            });
-          } else {
-            console.error('Error fetching data:', response.statusText);
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }
     
-      // Set interval to execute the function every 5 seconds (5000 milliseconds)
-      //let intervalId = setInterval(cronScoreBoard, 3000);
-    
-    </script>
     <input type="text" style="display: none;" name="player_username" id="player_username" >
  
 
