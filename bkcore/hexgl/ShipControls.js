@@ -593,10 +593,9 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
 
   if (color.r == 255 && color.g < 127 && color.b < 127) {
 
-    const time_seconds = 22; // @ TODO-FUEL: this.timer.time.elapsed;
-    const damage = 1 - this.shield; 
+    const time_seconds = 22; // @ TODO-FUEL: this.timer.time.elapse
     const current_distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-    fuel.Transactions.onBoost(time_seconds, damage, current_distance, this.speed);
+    fuel.Transactions.onBoost(time_seconds, current_distance);
     
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;

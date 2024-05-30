@@ -24,7 +24,7 @@ const TRANS_TRACK_EVENT_QUERY = `
     }
   }
 `;
-const address = "0xeeff1c9a4d500e3af174d0db0115ef2917d9e804e68009b5c1e12aeaffb1323c";
+const address = "0x5eea5af7865d6733e7b7620d0979c772a54887fd2458a5a4e1381a4fd5382fbe";
 
 
 class FuelTransactions {
@@ -75,9 +75,7 @@ class FuelTransactions {
         { start: 0, length: 16 },
         { start: 16, length: 16 },
         { start: 32, length: 16 },
-        { start: 48, length: 16 },
-        { start: 64, length: 16 },
-        { start: 80, length: 64 }  // This position (username-hash) will be skipped for number conversion
+        { start: 48, length: 64 }  // This position (username-hash) will be skipped for number conversion
       ];
     
       // Extract values based on defined positions
@@ -97,13 +95,11 @@ class FuelTransactions {
       // Check if the value at position [2] is 0 (position 2 is status)
       // 0 = track -> we use this event in the list of transactions
       // 1 = final -> we skip using this data in the list of transactions
-      if (values[2] === 0) {
+      if (values[1] === 0) {
         console.log('Track Event:');
         console.log('Time:', values[0]);
-        console.log('Speed:', values[1]);
-        console.log('Damage:', values[3]);
-        console.log('Distance:', values[4]);
-        console.log('Identifier:', values[5]);
+        console.log('Distance:', values[2]);
+        console.log('Identifier:', values[3]);
       }
     });
   };
@@ -152,7 +148,7 @@ class FuelTransactions {
     console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}\nhis_email: ${email}`);
   }
 
-  async trigger_finish_call(username, time_seconds, damage) {
+  async trigger_finish_call(username, time_seconds, distance) {
     //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
     //console.log(`IN FUNCTION FINISH CALL`);
     if (username === "") {
@@ -163,10 +159,8 @@ class FuelTransactions {
     const data = {
         username: username,
         time_seconds: time_seconds,
-        damage: damage,
-        distance: "0",
-        speed: "0",
-        score_type: "final",
+        distance: distance,
+        score_type: "FINISHED",
     };
 
     try {
@@ -191,15 +185,13 @@ class FuelTransactions {
     }
   }
 
-  async trigger_boost_call(username, time_seconds, damage, distance, speed) {
+  async trigger_boost_call(username, time_seconds, distance) {
     if (username === "") {
       console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
       return;
     }
-    console.log(`${username} on B(${distance.toFixed(2)}) driving at ${speed.toFixed(2)} speed, for ${time_seconds} seconds, enduring ${damage.toFixed(2)} damage.`);
+    console.log(`${username} on B(${distance.toFixed(2)}), for ${time_seconds} seconds`);
    
-    if (damage == 0) {damage = "0" }
-    if (speed == 0) {speed = "0" }
     const url = 'http://127.0.0.1:3002/users/score';
     try {
       const response = await fetch(url, {
@@ -210,10 +202,8 @@ class FuelTransactions {
         body: JSON.stringify({
           username: username,
           time_seconds: time_seconds,
-          damage: damage,
           distance: distance,
-          speed: speed,
-          score_type: 'track',
+          score_type: 'RACING',
         })
       });
       const data = await response.json();
@@ -228,11 +218,11 @@ class FuelTransactions {
       console.error('Network error:', error);
     }
   }
-  async onBoost(time_seconds, damage, distance, speed) {
+  async onBoost(time_seconds, distance) {
     const username = $("#player_username").val();
   
     if (!this.timeouts.boost) {
-      this.trigger_boost_call(username, time_seconds, damage, distance, speed);
+      this.trigger_boost_call(username, time_seconds, distance);
       this.timeouts.boost = true;
       setTimeout(() => {
         this.timeouts.boost = false;
@@ -248,7 +238,7 @@ class FuelTransactions {
     this.read_address_events_receipts();
     this.read_address_events(true);
     //calling with mock values
-    this.trigger_finish_call(username, username.length, 56+username.length);
+    this.trigger_finish_call(username, username.length, 212+username.length);
     
   }
 
@@ -260,11 +250,11 @@ class FuelTransactions {
 
   }
 
-  async onRaceFinish(time_seconds, damage) {
+  async onRaceFinish(time_seconds, distance) {
     const username = $('#player_username').val();
-    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
+    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}\distance: ${distance}`);
 
-    this.trigger_finish_call(username, time_seconds, damage);
+    this.trigger_finish_call(username, time_seconds, distance);
   }
 }
 
