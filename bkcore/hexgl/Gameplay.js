@@ -159,8 +159,10 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
     this.hud.updateLap(this.lap, this.maxLaps);
 
     this.trackInterval = setInterval(() => {      
-      console.log(this.shipControls)
-      const time_seconds = Math.round(22 + Math.random() * 10); // @ TODO-FUEL: this.timer.time.elapsed;
+      // console.log(this)
+      // console.log(this.shipControls)
+
+      const time_seconds = Math.round(this.timer.time.elapsed / 1000);
       const damage = Math.abs(this.shipControls.getShield(100)); 
       const current_distance = time_seconds * 5;
       const speed = this.shipControls.getRealSpeed(100); 
