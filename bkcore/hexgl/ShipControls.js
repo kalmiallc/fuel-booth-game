@@ -82,6 +82,7 @@ bkcore.hexgl.ShipControls = function (ctx) {
   this.gradientVector = new THREE.Vector3(0, 0, 5);
   this.gradientAxis = new THREE.Vector3(1, 0, 0);
 
+  this.time = 0.0;
   this.tilt = 0.0;
   this.tiltTarget = 0.0;
   this.tiltLerp = 0.05;
@@ -626,7 +627,7 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
     // console.log("Segment distance: ", segmentDistance);
     console.log("Total distance: ", this.totalDistance);
     
-    fuel.Transactions.onBoost(time_seconds, this.totalDistance);
+    fuel.Transactions.onBoost(this.time, this.totalDistance);
     
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;

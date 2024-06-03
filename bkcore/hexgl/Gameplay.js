@@ -246,6 +246,9 @@ bkcore.hexgl.Gameplay.prototype.checkPoint = function () {
 
   var color = this.analyser.getPixel(x, z);
 
+  /** save time to ship control variable */
+  this.shipControls.time = this.timer.time.elapsed
+
   if (color.r == 255 && color.g == 255 && color.b < 250) return color.b;
   else return -1;
 };

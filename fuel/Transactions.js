@@ -266,9 +266,9 @@ class FuelTransactions {
     }
   } 
 
-  async onTrack(time_seconds, damage, distance, speed) {
+  async onTrack(time_seconds, damage, speed) {
     const username = $('#player_username').val();
-    this.trigger_boost_call(username, time_seconds, distance, speed, damage);
+    this.trigger_boost_call(username, time_seconds, 1, speed, damage);
     
   }
 
