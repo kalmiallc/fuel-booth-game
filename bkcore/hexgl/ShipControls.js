@@ -594,7 +594,7 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
 
   if (color.r == 255 && color.g < 127 && color.b < 127) {
 
-    const time_seconds = 22; // @ TODO-FUEL: this.timer.time.elapse
+    const time_seconds = Math.round(this.time / 1000);
     // const current_distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
 
     
@@ -627,7 +627,7 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
     // console.log("Segment distance: ", segmentDistance);
     console.log("Total distance: ", this.totalDistance);
     
-    fuel.Transactions.onBoost(this.time, this.totalDistance);
+    fuel.Transactions.onBoost(time_seconds, this.totalDistance);
     
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;
