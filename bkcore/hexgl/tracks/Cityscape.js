@@ -591,7 +591,7 @@ bkcore.hexgl.tracks.Cityscape = {
     // );
     // coin.doubleSided = true;
 
-    var coinGeometry = this.lib.get("geometries", "fuel.coin");
+    // var coinGeometry = this.lib.get("geometries", "fuel.coin");
 
     //console.log(coinGeometry);
 
@@ -599,16 +599,16 @@ bkcore.hexgl.tracks.Cityscape = {
 
     //console.log("computed T");
 
-    var coinMesh = new THREE.Mesh(coinGeometry);
+    // var coinMesh = new THREE.Mesh(coinGeometry);
     //console.log(coinMesh);
-    coinMesh.position.set(-2267, 390, -808); // ShipControls#boosterCheck()
-    coinMesh.rotation.set(0, Math.PI / 2, 0);
-    scene.add(coinMesh);
+    // coinMesh.position.set(-2267, 390, -808); // ShipControls#boosterCheck()
+    // coinMesh.rotation.set(0, Math.PI / 2, 0);
+    // scene.add(coinMesh);
     // coinMesh.position.set(0, 0.665, 3.8);
     // ship.add(coinMesh);
-    coinMesh.castShadow = true;
-    coinMesh.receiveShadow = true;
-    coinMesh.doubleSided = true;
+    // coinMesh.castShadow = true;
+    // coinMesh.receiveShadow = true;
+    // coinMesh.doubleSided = true;
 
     //console.log(coinMesh);
     // #endregion

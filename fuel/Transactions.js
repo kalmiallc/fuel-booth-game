@@ -184,8 +184,8 @@ class FuelTransactions {
   }
   }
 
-  async trigger_finish_call(username, time_seconds) {
-    //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\ntime_seconds: ${time_seconds}\ndamage: ${damage}`);
+  async trigger_finish_call(username, time_milliseconds) {
+    //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\time_milliseconds: ${time_milliseconds}\ndamage: ${damage}`);
     //console.log(`IN FUNCTION FINISH CALL`);
     if (username === "") {
       console.log('Aborting on Finish call! Username is empty.\nSet: user("your_username").');
@@ -193,7 +193,7 @@ class FuelTransactions {
     } 
     const data = {
         username: username,
-        time_seconds: time_seconds,
+        time_seconds: time_milliseconds,
         distance: 1,
         score_type: "FINISHED",
     };
@@ -220,12 +220,12 @@ class FuelTransactions {
     }
   }
 
-  async trigger_boost_call(username, time_seconds, distance, speed, damage) {
+  async trigger_boost_call(username, time_milliseconds, distance, speed, damage) {
     if (username === "") {
       console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
       return;
     }
-    console.log(`${username} on B(${distance.toFixed(2)}), for ${time_seconds} seconds`);
+    console.log(`${username} on B(${distance.toFixed(2)}), for ${time_milliseconds} seconds`);
     
     try {
       const response = await fetch(API_SCORE_URL, {
@@ -235,7 +235,7 @@ class FuelTransactions {
         },
         body: JSON.stringify({
           username: username,
-          time_seconds: time_seconds,
+          time_seconds: time_milliseconds,
           distance: distance,
           score_type: 'RACING',
           speed: speed,
@@ -254,11 +254,11 @@ class FuelTransactions {
       console.error('Network error:', error);
     }
   }
-  async onBoost(time_seconds, distance) {
+  async onBoost(time_milliseconds, distance) {
     const username = $("#player_username").val();
   
     if (!this.timeouts.boost) {
-      this.trigger_boost_call(username, time_seconds, distance, 1, 1);
+      this.trigger_boost_call(username, time_milliseconds, distance, 1, 1);
       this.timeouts.boost = true;
       setTimeout(() => {
         this.timeouts.boost = false;
@@ -266,9 +266,9 @@ class FuelTransactions {
     }
   } 
 
-  async onTrack(time_seconds, damage, speed) {
+  async onTrack(time_milliseconds, damage, speed) {
     const username = $('#player_username').val();
-    this.trigger_boost_call(username, time_seconds, 1, speed, damage);
+    this.trigger_boost_call(username, time_milliseconds, 1, speed, damage);
     
   }
 
@@ -292,11 +292,11 @@ class FuelTransactions {
 
   }
 
-  async onRaceFinish(time_seconds) {
+  async onRaceFinish(time_milliseconds) {
     const username = $('#player_username').val();
-    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${time_seconds}`);
+    console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${(time_milliseconds / 1000)}`);
 
-    this.trigger_finish_call(username, time_seconds);
+    this.trigger_finish_call(username, time_milliseconds);
   }
 }
 

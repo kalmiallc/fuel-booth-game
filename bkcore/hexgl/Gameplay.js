@@ -159,10 +159,9 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
     this.hud.updateLap(this.lap, this.maxLaps);
 
     this.trackInterval = setInterval(() => {  
-      const time_seconds = Math.round(this.timer.time.elapsed / 1000);
       const damage = Math.abs(this.shipControls.getShield(100)); 
       const speed = this.shipControls.getRealSpeed(100); 
-      fuel.Transactions.onTrack(time_seconds, damage, speed);
+      fuel.Transactions.onTrack(this.timer.time.elapsed, damage, speed);
     }, 3000)
   }
 };
