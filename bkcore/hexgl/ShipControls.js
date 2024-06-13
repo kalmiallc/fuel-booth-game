@@ -624,8 +624,11 @@ bkcore.hexgl.ShipControls.prototype.boosterCheck = function (dt) {
     // Log the segment distance and the total distance for debugging
     // console.log("Segment distance: ", segmentDistance);
     console.log("Total distance: ", this.totalDistance);
+
+    const speed = this.getRealSpeed(100); 
+    const damage = Math.abs(this.getShield(100)); 
     
-    fuel.Transactions.onBoost(this.time, this.totalDistance);
+    fuel.Transactions.onBoost(this.time, speed, damage);
     
     bkcore.Audio.play("boost");
     this.boost = this.boosterSpeed;

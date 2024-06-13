@@ -55,6 +55,128 @@ html, body {
   background: white;
 }
 
+img {
+  max-width: 100%;
+}
+
+p {  
+  font-family: 'space_grotesk';
+}
+body {
+  padding:0;
+  margin:0;
+}
+canvas { pointer-events:none; width: 100%;}
+#overlay{
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* Style for the input field */
+input[type="text"] {
+  padding: 15px 20px;
+  font-size: 24px;
+  border-radius: 0;
+  color: #000;
+  border: none;
+  background-color: #D9D9D9;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+}
+input[type="checkbox"] {
+  position: absolute;
+  visibility: hidden;
+}
+input[type="checkbox"] + label {
+  padding-left: 30px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #555050;
+}
+input[type="checkbox"] + label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  color: #000;
+  border: 2px solid #00F58C;
+  background-color: #fff;
+}
+input[type="checkbox"]:checked + label:before {
+  background: url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M19 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.11 21 21 20.1 21 19V5C21 3.9 20.11 3 19 3ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="%2300F58C"/></svg>');
+  background-position: center center;
+}
+
+/* Style for the button */
+button {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 24px;
+  text-align: center;
+  border-radius: 0;
+  color: #000;
+  border: none;
+  background-color: #00e182;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Style for the button on hover */
+button:hover {
+  background-color: #3dd68c;
+}
+
+/* Style for the placeholder text */
+::placeholder {
+  color: #1c1c1b;
+  font-size: 16px;
+}
+#high_score_panel {
+  display: none;
+  position: fixed;
+  top: 50px; /* Adjust this value to position the panel where you want */
+  left: 50px; /* Adjust this value to position the panel where you want */
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px 30px 5px 5px;
+  border-radius: 5px;
+  z-index: 999; /* Ensure it appears above other content */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
+}
+#username_text_error_small,
+#terms_text_error_small {
+  color: red;
+  font-size: small;
+  margin-top: -15px;
+  display: block;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
+}
+#terms_text_error_small {
+  position: absolute;
+  bottom: -15px;
+}
+#display_username, #btn_settings {
+    width: auto;
+    color: #f8854b;
+    text-shadow: 0 0 10px rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.1); /* rgba(255, 255, 255, 0.8) transparent background */
+    font-size: 2.8em;
+    margin: 0 auto; /* Center the element horizontally */
+    padding: 0 10px; /* Optional: Add padding for better appearance */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    position: fixed;
+    top: 5px; /* Adjust this value to position the panel where you want */
+    left: 5px; /* Adjust this value to position the panel where you want */
+    z-index: 999; /* Ensure it appears above other content */
+}
+
 #global {
   position: absolute;
   top: 0;
@@ -62,37 +184,31 @@ html, body {
   bottom: 0;
   left: 0;
   z-index: 0;
-  background: url('bg.jpg') no-repeat center center fixed;
-  overflow: hidden;
-  text-align: center;
-  -moz-background-size: cover;
-  -webkit-background-size: cover;
-  -ms-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -o-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-animation: animbg 3s ease-in-out infinite;
-  -moz-animation: animbg 3s ease-in-out infinite;
-  -o-animation: animbg 3s ease-in-out infinite;
-  animation: animbg 3s ease-in-out infinite;
+  background: black;
+}
+
+#container {  
+  position: relative;
+  height: 100%;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 1680px;
+  display: flex;
+  gap: 2%;
+  padding: 50px;
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 #title {
-  position: absolute;
-  top: 5%;
-  right: 0;
-  bottom: 5%;
-  left: 0;
+  width: 50%;
   z-index: 1;
-  background: url('title.png') no-repeat center top;
-  -moz-background-size: auto 50%;
-  -webkit-background-size: auto 50%;
-  -ms-background-size: auto 50%;
-  -o-background-size: auto 50%;
-  background-size: auto 50%;
+  background: url('title.png') no-repeat center center;
+  -moz-background-size: contain;
+  -webkit-background-size: contain;
+  -ms-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -o-transform: translateZ(0);
@@ -104,28 +220,81 @@ html, body {
 }
 
 #menucontainer {
-  position: absolute;
-  top: auto;
-  right: 0;
-  bottom: 10%;
-  left: 0;
+  width: 50%;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-#menu {
+#menu, #settings {
   position: relative;
   display: block;
   width: 100%;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
+  max-width: 700px;
   font-size: 2em;
   font-family: 'BebasNeueRegular', arial, sans-serif;
+  color: #fff;
+}
+#settings {
+  max-width: 600px; 
+  text-align: center;
+  color: #000; 
   text-transform: uppercase;
-  color: #4190bb;
 }
 
-#menu div {
+#s-new_user {
+  margin-top: 30px;
+  font-family: 'space_grotesk';
+  font-size: 28px;
+  max-width: 500px;
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 10; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+} 
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 600px;
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin: -25px -15px 0 0;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#settings .field {
   padding: 0.1em 0 0 0;
   margin: 0 0;
   cursor: pointer;
@@ -145,12 +314,6 @@ html, body {
   background: -o-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 40%,rgba(255,255,255,0.5) 60%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
   background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 40%,rgba(255,255,255,0.5) 60%,rgba(255,255,255,0) 100%); /* IE10+ */
   background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 40%,rgba(255,255,255,0.5) 60%,rgba(255,255,255,0) 100%); /* W3C */
-}
-
-#menu div:hover {
-  color: #f66439;
-  -webkit-transform: scaleY(1.0);
-  transform: scaleY(1.1);
 }
 
 #start {

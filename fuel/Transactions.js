@@ -68,8 +68,6 @@ class FuelTransactions {
       console.error('Failed to fetch time data:', error);
     }
   }
-
-
   
   async read_address_events_receipts() {
 
@@ -149,8 +147,8 @@ class FuelTransactions {
     console.log(`IN FUNCTION START CALL his_user_name: ${username}\nhis_email: ${email}`);
   }
 
-  async trigger_dead_call(username, distance) {
-    console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}\ndistance: ${distance}`);
+  async trigger_dead_call(username) {
+    console.log(`IN FUNCTION DEAD CALL his_user_name: ${username}`);
     if (username === "") {
       console.log('Aborting on Destroy call! Username is empty.\nSet: user("your_username").');
       return;
@@ -159,7 +157,7 @@ class FuelTransactions {
     const data = {
       username: username,
       time_seconds: 1,
-      distance: distance,
+      distance: 0,
       score_type: "DESTROYED",
     };
     try {
@@ -184,9 +182,7 @@ class FuelTransactions {
   }
   }
 
-  async trigger_finish_call(username, time_milliseconds) {
-    //console.log(`IN FUNCTION FINISH CALL his_user_name: ${username}\time_milliseconds: ${time_milliseconds}\ndamage: ${damage}`);
-    //console.log(`IN FUNCTION FINISH CALL`);
+  async trigger_finish_call(username, time_milliseconds, speed, damage) {
     if (username === "") {
       console.log('Aborting on Finish call! Username is empty.\nSet: user("your_username").');
       return;
@@ -194,8 +190,10 @@ class FuelTransactions {
     const data = {
         username: username,
         time_seconds: time_milliseconds,
-        distance: 1,
+        distance: 100,
         score_type: "FINISHED",
+        speed: speed,
+        damage: damage,
     };
 
     try {
@@ -220,12 +218,12 @@ class FuelTransactions {
     }
   }
 
-  async trigger_boost_call(username, time_milliseconds, distance, speed, damage) {
+  async trigger_boost_call(username, time_milliseconds, speed, damage) {
     if (username === "") {
       console.log('Aborting on boost call! Username is empty.\nSet: user("your_username").');
       return;
     }
-    console.log(`${username} on B(${distance.toFixed(2)}), for ${time_milliseconds} seconds`);
+    console.log(`${username} on B(${time_milliseconds.toFixed(2)}), for ${time_milliseconds} seconds`);
     
     try {
       const response = await fetch(API_SCORE_URL, {
@@ -236,7 +234,7 @@ class FuelTransactions {
         body: JSON.stringify({
           username: username,
           time_seconds: time_milliseconds,
-          distance: distance,
+          distance: 0,
           score_type: 'RACING',
           speed: speed,
           damage: damage,
@@ -254,11 +252,11 @@ class FuelTransactions {
       console.error('Network error:', error);
     }
   }
-  async onBoost(time_milliseconds, distance) {
+  async onBoost(time_milliseconds, speed, damage) {
     const username = $("#player_username").val();
   
     if (!this.timeouts.boost) {
-      this.trigger_boost_call(username, time_milliseconds, distance, 1, 1);
+      this.trigger_boost_call(username, time_milliseconds, speed, damage);
       this.timeouts.boost = true;
       setTimeout(() => {
         this.timeouts.boost = false;
@@ -266,9 +264,9 @@ class FuelTransactions {
     }
   } 
 
-  async onTrack(time_milliseconds, damage, speed) {
+  async onTrack(time_milliseconds, speed, damage) {
     const username = $('#player_username').val();
-    this.trigger_boost_call(username, time_milliseconds, 1, speed, damage);
+    this.trigger_boost_call(username, time_milliseconds, speed, damage);    
     
   }
 
@@ -277,26 +275,21 @@ class FuelTransactions {
     const username = $('#player_username').val();
     //this.trigger_start_call(username, variable_temporary);
 
-    this.read_address_events_receipts();
-    this.read_address_events(true);
-    //calling with mock values
-    // this.trigger_finish_call(username, 212+username.length);
+    // this.read_address_events_receipts();
+    // this.read_address_events(true);
     
   }
 
-  async onDead(distance) {
+  async onDead() {
     const username = $('#player_username').val();
-    console.log(`On DEAD his_user_name: ${username}\ndistance: ${distance}`);
-
-    this.trigger_dead_call(username, distance);
-
+    this.trigger_dead_call(username);
   }
 
-  async onRaceFinish(time_milliseconds) {
+  async onRaceFinish(time_milliseconds, speed, damage) {
     const username = $('#player_username').val();
     console.log(`On FINISH his_user_name: ${username}\ntime_seconds: ${(time_milliseconds / 1000)}`);
 
-    this.trigger_finish_call(username, time_milliseconds);
+    this.trigger_finish_call(username, time_milliseconds, speed, damage);
   }
 }
 

@@ -154,14 +154,16 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
   if (this.hud != null) {
     this.hud.resetTime();
     this.hud.display("Get ready", 1);
-    //console.log("--On Track Start-------------------------");
+    console.log("--On Track Start-------------------------");
     fuel.Transactions.onStart("On Start variable");
     this.hud.updateLap(this.lap, this.maxLaps);
 
     this.trackInterval = setInterval(() => {  
-      const damage = Math.abs(this.shipControls.getShield(100)); 
+      console.log("--On Track interval-------------------------");
       const speed = this.shipControls.getRealSpeed(100); 
-      fuel.Transactions.onTrack(this.timer.time.elapsed, damage, speed);
+      const damage = Math.abs(this.shipControls.getShield(100)); 
+      
+      fuel.Transactions.onTrack(this.timer.time.elapsed, speed, damage);
     }, 3000)
   }
 };
@@ -177,13 +179,15 @@ bkcore.hexgl.Gameplay.prototype.end = function (result) {
   if (result == this.results.FINISH) {
     if (this.hud != null) this.hud.display("Finish");
     console.log("-----------finishTime----------------------------");
-    fuel.Transactions.onRaceFinish(this.finishTime);
+    const speed = this.shipControls.getRealSpeed(100); 
+    const damage = Math.abs(this.shipControls.getShield(100)); 
+    fuel.Transactions.onRaceFinish(this.finishTime, speed, damage);
     this.step = 100;
     clearInterval(this.trackInterval);
   } else if (result == this.results.DESTROYED) {
     if (this.hud != null) this.hud.display("Destroyed");
     // console.log("-------------onDEAD--------------------------");
-    fuel.Transactions.onDead(1230);
+    fuel.Transactions.onDead();
     this.step = 100;
     clearInterval(this.trackInterval);
   }

@@ -71,10 +71,7 @@
   };
 
   $('step-5').onclick = function() {
-    // window.location.reload()
-    // Open register
-    // TODO: change link
-    return window.open('http://localhost:3003', '_self');
+    window.location.reload()
   };
 
   $('s-credits').onclick = function() {
