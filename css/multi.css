@@ -203,7 +203,7 @@ button:hover {
 #title {
   width: 50%;
   z-index: 1;
-  background: url('title.png') no-repeat center center;
+  background: url('title-orig.png') no-repeat center center;
   -moz-background-size: contain;
   -webkit-background-size: contain;
   -ms-background-size: contain;
