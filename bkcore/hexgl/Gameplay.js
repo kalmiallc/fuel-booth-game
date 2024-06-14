@@ -155,7 +155,7 @@ bkcore.hexgl.Gameplay.prototype.start = function (opts) {
     this.hud.resetTime();
     this.hud.display("Get ready", 1);
     console.log("--On Track Start-------------------------");
-    fuel.Transactions.onStart("On Start variable");
+    fuel.Transactions.onStart();
     this.hud.updateLap(this.lap, this.maxLaps);
 
     this.trackInterval = setInterval(() => {  

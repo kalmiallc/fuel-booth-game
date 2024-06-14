@@ -271,8 +271,9 @@ class FuelTransactions {
   }
 
 
-  async onStart(variable_temporary) {
+  async onStart() {
     const username = $('#player_username').val();
+    this.trigger_boost_call(username, 0, 0, 100);
     //this.trigger_start_call(username, variable_temporary);
 
     // this.read_address_events_receipts();
