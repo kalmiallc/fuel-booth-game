@@ -1,8 +1,13 @@
-# HexGL ft Fuel
+# Fuel Game
 
 Source code from [HexGL](http://hexgl.bkcore.com), the futuristic HTML5 racing game by [Thibaut Despoulain](http://bkcore.com)
 
 The app is built on three.js r53, download the source [https://github.com/mrdoob/three.js/releases/tag/r53](https://github.com/mrdoob/three.js/releases/tag/r53) and run docs locally.
+
+### Requirements
+
+- node version 18+
+- running fuel-api on localhost port 3002
 
 ## Running
 
@@ -10,7 +15,7 @@ The app is built on three.js r53, download the source [https://github.com/mrdoob
 npm i  
 npm i --force
 
-# dev (serve with broswer refresh on file change)
+# dev (serve with browser refresh on file change)
 npm run dev
 
 # if changing coffeescript
@@ -45,13 +50,17 @@ _To use full size textures, swap the two textures/ and textures.full/ directorie
 
 2. ```npx tsc``` [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) Compile  and look in the ```/dist``` folder  
 ``` npm run tsbuild , npm run wpbuild, npm start ```  
-  
+ 
+```sh 
   "scripts": { 
     "dev": "run-p serve live-reload", 
     "build": "webpack --config webpack.config.js",
-     "start": "run-p serve live-reload", 
-     "tsbuild": "tsc -p tsconfig.json",
-      "wpbuild": "webpack", 
-      "dev:coffee": "run-p compile:watch serve", 
-      "serve": "http-server ./ -p 8080",
-       "live-reload": "browser-sync start --proxy "127.0.0.1:8080" --files "."", "compile": "coffee -c .", "compile:watch": "coffee --watch -c ." },
+    "start": "run-p serve live-reload", 
+    "tsbuild": "tsc -p tsconfig.json",
+    "wpbuild": "webpack", 
+    "dev:coffee": "run-p compile:watch serve", 
+    "serve": "http-server ./ -p 8080",
+    "live-reload": "browser-sync start --proxy "127.0.0.1:8080" --files "."", 
+    "compile": "coffee -c .", "compile:watch": "coffee --watch -c .", 
+  }  
+```
